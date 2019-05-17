@@ -44,7 +44,7 @@ Enter Expression
 a+b*c
 Valid Expression
 Count Operand=3, Plus=1, Minus=0, Multiply=1, Divide=0
---------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 
 1.b. Write YACC program to evaluate arithmetic expression involving operators: +, -, *, and /
 
@@ -113,10 +113,10 @@ Output:
 >>> ./a.out 
 2+3*8
 Result=26
---------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 
 2. Develop, Implement and Execute a program using YACC tool to recognize all strings
-ending with b preceded by n a’s using the grammar a
+ending with b preceded by n aâ€™s using the grammar a
 n b (note: input n value)
 
 LEX Part
@@ -182,7 +182,7 @@ Enter n value
 5
 aaaaab
 Valid String
--------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 
 3. Design, develop and implement YACC/C program to construct Predictive / LL(1)
 Parsing Table for the grammar rules: A ?aBa , B ?bB | e. Use this table to parse
@@ -364,7 +364,7 @@ Ba$		a$		Apply Production B->@
 a$		a$		Matched a
 $		$	
 Valid String
----------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 
 5. Design, develop and implement a C/Java program to generate the machine code using triples for the statement A = -B * (C +D) whose intermediate code in three-address form: 
     T1 = -B 
