@@ -1,5 +1,3 @@
-package ssos;
-
 import java.util.Scanner;
 
 public class Main {
