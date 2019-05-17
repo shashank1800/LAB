@@ -10,12 +10,12 @@ public class Main {
     
     public static void main(String []args) {
     	
-        System.out.println("Select page replacement algorithm\n");
+        System.out.println("Select Page Replacement Algorithm\n");
         
-        System.out.println("Enter the frame size\n");
+        System.out.println("Enter the Frame Size\n");
         frameSize = sc.nextInt();
        
-        System.out.println("Enter no of page requests\n");
+        System.out.println("Enter no. of page Requests\n");
         noOfPageRequests = sc.nextInt();
        
         frame = new int[frameSize];
@@ -32,10 +32,12 @@ public class Main {
         case 2:runLRU();
             break;
         }
+        
+        System.out.println("Page Fault = "+(noOfPageRequests-hit));
+	System.out.println("Page Hit = "+hit);
     }
 
     static void runFIFO() {
-        
         for(int i=0;i<noOfPageRequests;i++) {
             displayFrame(frame);
             if(i<frameSize)
@@ -50,13 +52,10 @@ public class Main {
                 }
             }
         }
-        System.out.println("Page hit = "+hit);
-        System.out.println("Page fault = "+(noOfPageRequests-hit));
      }
     
     static void runLRU() {
         for(int i=0;i<noOfPageRequests;i++) {
-        	
         	displayFrame(frame);
             if(i<frameSize)
             	pushToStack(pageRequests[i]);
@@ -71,8 +70,6 @@ public class Main {
                 }
             }
         }
-        System.out.println("Page hit = "+hit);
-        System.out.println("Page fault = "+(noOfPageRequests-hit));
     }
 
 	static void displayFrame(int[] frame) {
@@ -101,6 +98,5 @@ public class Main {
     		}
     	}
        frame = tempArray;
-    	
     }
 }
