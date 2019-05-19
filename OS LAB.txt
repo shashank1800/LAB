@@ -486,3 +486,103 @@ public class Main {
        frame = tempArray;
     }
 }
+
+
+import java.util.Scanner;
+
+public class Bankers {
+
+	public static int Allocation[][];
+	public static int Max[][];
+	public static int Need[][];
+	public static int[] Available,Request;
+
+	public static void main(String[] args) {
+
+		Scanner sc=new Scanner(System.in);
+		System.out.println("Enter the number of process");
+		int n=sc.nextInt();
+
+		System.out.println("Enter the number of Resources");
+		int m=sc.nextInt();
+
+		Allocation=new int[n][m];
+		Max=new int[n][m];
+		Available = new int[m];
+		Need=new int[n][m];
+		Request = new int[m];
+		
+		System.out.println("Enter the Allocation data");
+		for(int i=0;i<n;i++)
+			for(int j=0;j<m;j++)
+				Allocation[i][j]=sc.nextInt();
+		
+		System.out.println("Enter the Max data");
+		for(int i=0;i<n;i++)
+			for(int j=0;j<m;j++){
+				Max[i][j]=sc.nextInt();
+				Need[i][j]=Max[i][j]-Allocation[i][j];
+			}
+
+		System.out.println("Need is");
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<m;j++)
+				System.out.print(Need[i][j]+" ");
+			System.out.println();
+		}
+
+		System.out.println("Enter the available values");
+		for(int i=0;i<m;i++)
+			Available[i]=sc.nextInt();
+		System.out.println("Is there any resource request? (Reply 1 for yes or 0 for no)");
+		int response = sc.nextInt();
+		
+		if(response == 1){
+			System.out.println("Enter the process requesting the resource");
+			int process_request=sc.nextInt();
+			
+			System.out.println("Enter the resource");
+			for(int i=0;i<m;i++)
+				Request[i]=sc.nextInt();
+
+			if((Request[0]<=Need[process_request][0]) && (Request[1]<=Need[process_request][1]) && (Request[2]<=Need[process_request][2]))
+			{
+				if((Request[0]<=Available[1]) && (Request[1]<=Available[1]) && (Request[1]<=Available[2]))
+				{
+					
+					for(int i=0;i<m;i++){
+						Available[i] -= Request[i];
+						Allocation[process_request][i] +=Request[i];
+						Need[process_request][i]-=Request[i];
+					}
+				}
+			}
+		}
+		
+		int flag[]=new int[n];
+		for(int k=0;k<m;k++)
+		{
+			for(int i=0;i<n;i++)
+			{
+				if((flag[i]!=1 && Need[i][0]<=Available[0]) && (Need[i][1]<=Available[1]) && (Need[i][2]<=Available[2]))
+				{
+					flag[i]=1;
+					System.out.println("Process P["+i+"] execution is successful");
+					Available[0] +=Allocation[i][0];
+					Available[1] +=Allocation[i][1];
+					Available[2] +=Allocation[i][2];
+
+				}
+				else 
+					continue;
+			}
+		}
+
+		System.out.println("The New Available Resource is:-");
+		System.out.println("AvailableA:"+Available[0]);
+		System.out.println("AvailableB:"+Available[1]);
+		System.out.println("AvailableC:"+Available[2]);
+	}
+
+}
