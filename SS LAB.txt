@@ -369,158 +369,146 @@ Valid String
 Parsing technique for the grammar rules: E →E+T | T, T →T*F | F, F →(E) | id
 and parse the sentence: id + id * id. 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-char ip_sym[15], stack[15];
-int ip_ptr = 0, st_ptr = 0, len, i;
-char temp[3];
-char act[15];
-void check();
-void main()
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+int top=-1;
+int i=0;
+char input[20];
+char stack[20];
+char action[20];
+void printfn()
 {
-    printf("Grammar\n");
-    printf("E -> E + T | T\n");
-    printf("T -> T * F | F\n");
-    printf("F -> (E) | id \n");
-    printf("Enter the input expression:\n");
-    scanf("%s", ip_sym);
-    printf("Stack\t\t\tInput Dymbol\t\t\tAction\n");
-    printf("$\t\t\t%s$\t\t\t--\n", ip_sym);
-    strcpy(act, "Shift ");
-    if (ip_sym[ip_ptr] == '(')
-    {
-        temp[0] = ip_sym[ip_ptr];
-        temp[1] = '\0';
-    }
-    else
-    {
-        temp[0] = ip_sym[ip_ptr];
-        temp[1] = ip_sym[ip_ptr + 1];
-        temp[2] = '\0';
-    }
-    strcat(act, temp);
-    len = strlen(ip_sym);
-
-    for (i = 0; i <= len - 1; i++)
-    {
-        if (ip_sym[ip_ptr] == 'i' && ip_sym[ip_ptr + 1] == 'd')
-        {
-            stack[st_ptr] = ip_sym[ip_ptr];
-            st_ptr++;
-            ip_sym[ip_ptr] = ' ';
-            ip_ptr++;
-            stack[st_ptr] = ip_sym[ip_ptr];
-            stack[st_ptr + 1] = '\0';
-            ip_sym[ip_ptr] = ' ';
-            ip_ptr++;
-        }
-        else
-        {
-            stack[st_ptr] = ip_sym[ip_ptr];
-            stack[st_ptr + 1] = '\0';
-            ip_sym[ip_ptr] = ' ';
-            ip_ptr++;
-        }
-        printf("$%s\t\t\t%s$\t\t\t%s\n", stack, ip_sym, act);
-        strcpy(act, "Shift ");
-        if (ip_sym[ip_ptr] == '(' || ip_sym[ip_ptr] == '*' || ip_sym[ip_ptr] == '+' || ip_sym[ip_ptr] == ')')
-        {
-            temp[0] = ip_sym[ip_ptr];
-            temp[1] = '\0';
-        }
-        else
-        {
-            temp[0] = ip_sym[ip_ptr];
-            temp[1] = ip_sym[ip_ptr + 1];
-            temp[2] = '\0';
-        }
-        strcat(act, temp);
-        check();
-        st_ptr++;
-    }
-    st_ptr++;
-    check();
+        int j;
+        for(j=0;j<=top;j++)
+                printf("%c",stack[j]);
+        printf("\t%s",input);
+        printf("\t%s",action);
+        printf("\n");
 }
-
 void check()
 {
-    int flag = 0;
-    while (1)
-    {
-        if (stack[st_ptr] == 'd' && stack[st_ptr - 1] == 'i')
-        {
-            stack[st_ptr - 1] = 'F';
-            stack[st_ptr] = '\0';
-            st_ptr--;
-            flag = 1;
-            printf("$%s\t\t\t%s$\t\t\tF->id\n", stack, ip_sym);
+        while(1)
+        {                     
+                if(stack[top]=='T' && stack[top-1]=='+' && stack[top-2]=='E')
+                {
+                        if(input[i+1]=='*')
+                                break;
+                }
+             	if(stack[top]=='T')
+                {
+                       if(input[i+1]=='*')
+                               break;
+                }
+                if(stack[top]=='F' && stack[top-1]=='*' && stack[top-2]=='T')
+                {
+                        strcpy(action,"Reduce T->T*F");
+                        stack[--top]=' ';
+                        stack[--top]='T';
+                        printfn();
+                }
+                if(stack[top]=='T' && stack[top-1]=='+' && stack[top-2]=='E')
+                {
+                       strcpy(action,"Reduce E->E+T");
+                       stack[--top]=' ';
+                       stack[--top]='E';
+                       printfn();
+                }  
+			    if(stack[top]==')' && stack[top-1]=='E' && stack[top-2]=='(')
+			    {
+			   		 strcpy(action,"Reduce F->(E)");
+			   		 stack[--top]=' ';
+                     stack[--top]='F';
+                     printfn();
+			    }
+			                 
+                if(stack[top]=='d' && stack[top-1]=='i')
+                {
+                        strcpy(action,"Reduce F->id");
+                        stack[--top]='F';
+                        printfn();                       
+                }       
+             	else if(stack[top]=='F')
+                {
+                       strcpy(action,"Reduce T->F");
+                       stack[top]='T';
+                       printfn();
+                }
+                else if(stack[top]=='T')
+                {
+                       strcpy(action,"Reduce E->T");
+                       stack[top]='E';
+                       printfn();
+                }
+                else if(stack[top]=='E' || stack[top]=='*' || stack[top]=='+' || stack[top]=='(' || stack[top]==')')
+                {
+                        break;
+                }              
         }
-
-        if (stack[st_ptr] == ')' && stack[st_ptr - 1] == 'E' && stack[st_ptr - 2] == '(')
-        {
-            stack[st_ptr - 2] = 'F';
-            stack[st_ptr - 1] = '\0';
-            flag = 1;
-            st_ptr = st_ptr - 2;
-            printf("$%s\t\t\t%s$\t\t\tF->id\n", stack, ip_sym);
-        }
-
-        if (stack[st_ptr] == 'F' && stack[st_ptr - 1] == '*' && stack[st_ptr - 2] == 'T')
-        {
-            stack[st_ptr - 1] = '\0';
-            st_ptr = st_ptr - 2;
-            flag = 1;
-            printf("$%s\t\t\t%s$\t\t\tT->T*F\n", stack, ip_sym);
-        }
-        else if (stack[st_ptr] == 'F')
-        {
-            stack[st_ptr] = 'T';
-            flag = 1;
-            printf("$%s\t\t\t%s$\t\t\tT->F\n", stack, ip_sym);
-        }
-
-        if (stack[st_ptr] == 'T' && stack[st_ptr - 1] == '+' && stack[st_ptr - 2] == 'E' && ip_sym[ip_ptr] != '*')
-        {
-            stack[st_ptr - 1] = '\0';
-            st_ptr = st_ptr - 2;
-            flag = 1;
-            printf("$%s\t\t\t%s$\t\t\tE->E+T\n", stack, ip_sym);
-        }
-        else if ((stack[st_ptr] == 'T' && ip_sym[ip_ptr] == '+') || (stack[0] == 'T' && ip_sym[ip_ptr] == '\0') ||
-                 (stack[st_ptr] == 'T' && ip_sym[ip_ptr] == ')'))
-        {
-            stack[st_ptr] = 'E';
-            flag = 1;
-            printf("$%s\t\t\t%s$\t\t\tE->T\n", stack, ip_sym);
-        }
-
-        if (ip_sym[ip_ptr] != '$' && flag != 1)
-        {
-            flag = 2;
-        }
-
-        if (!strcmp(stack, "E") && ip_sym[ip_ptr] == '\0')
-        {
-            printf("$%s\t\t\t%s$\t\t\tAccept\n", stack, ip_sym);
-            exit(0);
-        }
-
-        if (flag == 0)
-        {
-            printf("\n%s\t\t\t%s\t\tReject", stack, ip_sym);
-            exit(0);
-        }
-
-        if (flag == 2)
-        {
-            return;
-        }
-
-        flag = 0;
-    }
 }
-
+int main()
+{
+        printf("Enter the sentence\n");
+        scanf("%s",input);
+        int len=strlen(input);
+        input[len] ='$';
+        stack[++top]='$';
+        printf("Stack\tInput\tAction\n");
+        printf("$\t%s\t---\n",input);
+        for(i=0;input[i]!='$';i++)
+        {
+                if(input[i]=='i' && input[i+1]=='d')
+                {
+                        input[i]=' ';
+                        input[i+1] =' ';
+                        stack[++top] ='i';
+                        stack[++top]='d';
+                        i=i+1;
+                        strcpy(action,"Shift id");
+                        printfn();
+                        check();
+                }
+               else if(input[i]=='*')
+                {
+                        input[i]=' ';
+                        stack[++top]='*';                        
+                        strcpy(action,"Shift *");
+                        printfn();
+                        check();                        
+                }
+               else if(input[i]=='+')
+               {
+                       input[i]=' ';
+                       stack[++top]='+';
+                       strcpy(action,"Shift +");
+                       printfn();
+                       check();
+               }
+               else if(input[i]=='('){
+               		    input[i]=' ';
+                       stack[++top]='(';
+                       strcpy(action,"Shift (");
+                       printfn();
+                       check();
+               }
+               else if(input[i]==')'){
+               			input[i]=' ';
+                       stack[++top]=')';
+                       strcpy(action,"Shift )");
+                       printfn();
+                       check();
+               }
+               else{
+               	        break;
+               }
+        }
+        if(stack[top]=='E' && input[i]=='$')
+        	strcpy(action,"ACCEPT");
+        else
+        	strcpy(action,"REJECT");
+        printfn();
+        return 0;
+}
 
 Output:
 Grammar
@@ -553,94 +541,37 @@ $E			            $			Accept
     T3 = T1 + T2 
     A = T3
 
-#include <stdio.h>
-#include <stdio.h>
-#include <string.h>
-void main()
-{
-    char icode[10][30], opr;
-    char op1[5], op2[5], res[5];
-    int i = 0, n, j, k;
-    printf("\nenter the number of intermediate statements");
-    scanf("%d", &n);
-    printf("\n Enter the set of intermediate code \n");
-    for (i = 0; i < n; i++)
-    {
-        scanf("%s", icode[i]);
-    }
-    printf("\n");
-    for (i = 0; i < n; i++)
-    {
-        j = 0, k = 0;
-        while (icode[i][j] != '=')
-        {
-            res[k] = icode[i][j];
-            j = j + 1;
-            k = k + 1;
-        }
-        res[j] = '\0';
-        k = 0;
-        j++;
-        if (icode[i][j] == '-')
-        {
-            j++;
-            while (icode[i][j] != '\0')
-            {
-                op1[k] = icode[i][j];
-                j++;
-                k++;
-            }
-            op1[k] = '\0';
-            printf("\nLoad R1,%s \n", op1);
-            printf("NEG R1\n");
-            printf("STORE %s,R1\n", res);
-        }
-        else
-        {
-            k = 0;
-            while (icode[i][j] != '\0' && icode[i][j] != '+' && icode[i][j] != '-')
-            {
-                op1[k] = icode[i][j];
-                j++;
-                k++;
-            }
-            op1[k] = '\0';
-            if (icode[i][j] == '\0')
-            {
-                printf("\nLoad R4,%s \n", op1);
-                printf("STORE %s,R4\n", res);
-                continue;
-            }
-            else
-            {
-                opr = icode[i][j];
-                k = 0;
-                j++;
-                while (icode[i][j] != '\0')
-                {
-                    op2[k] = icode[i][j];
-                    j++;
-                    k++;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+class MachineCode {
+    public static void main(String[] args) throws IOException {
+        File file = new File("input.txt");
+        Scanner scanner = new Scanner(file);
+        PrintWriter printWriter = new PrintWriter("output.txt");
+        while (scanner.hasNextLine()) {
+            String[] fields = scanner.nextLine().split(" ");
+            if (fields.length < 4) {
+                printWriter.println(String.format("LOAD R1, %s", fields[2]));
+                printWriter.println(String.format("STORE %s, R1\n", fields[0]));
+            } else if (fields.length == 5) {
+                printWriter.println(String.format("LOAD R2, %s", fields[2]));
+                printWriter.println(String.format("LOAD R3, %s", fields[4]));
+                switch (fields[3]) {
+                    case "+":
+                        printWriter.println("ADD R1,R3,R2");
+                        break;
+                    case "-":
+                        printWriter.println("SUB R1,R3,R2");
+                        break;
+                    default:
+                        printWriter.println("Unsupported Operator");
                 }
-                op2[k] = '\0';
-            }
-            switch (opr)
-            {
-            case '+':
-                printf("Load R2,%s \n", op1);
-                printf("Load R3,%s \n", op2);
-                printf("ADD R1,R2,R3\n");
-                printf("STORE %s,R1\n", res);
-                break;
-            case '-':
-                printf("Load R2,%s \n", op1);
-                printf("Load R3,%s \n", op2);
-                printf("SUB R1,R3,R2\n");
-                printf("STORE %s,R1\n", res);
-            default:
-                printf("\n Invalid statement\n");
+                printWriter.println(String.format("STORE %s, R1\n", fields[0]));
             }
         }
+        printWriter.close();
     }
 }
-
