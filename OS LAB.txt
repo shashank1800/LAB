@@ -198,8 +198,8 @@ Average Wait Time: 5.6666665, Average Turn Around Time: 15.666667
 8. Design, develop and implement a C/C++/Java program to implement Banker’s
 algorithm. Assume suitable input required to demonstrate the results.
 Note: All the inputs are based on index 1 (i.e. Process number starts from 1)
-import java.util.Scanner;
 
+import java.util.Scanner;
 public class Bankers {
 
 	public static int Allocation[][];
@@ -210,58 +210,58 @@ public class Bankers {
 	public static void main(String[] args) {
 
 		Scanner sc=new Scanner(System.in);
-		System.out.println("Enter the number of process");
-		int n=sc.nextInt();
+		System.out.println("Enter number of process");
+		int nProcess=sc.nextInt();
 
-		System.out.println("Enter the number of Resources");
-		int m=sc.nextInt();
+		System.out.println("Enter number of Resources");
+		int nResource=sc.nextInt();
 
-		Allocation=new int[n][m];
-		Max=new int[n][m];
-		Available = new int[m];
-		Need=new int[n][m];
-		Request = new int[m];
-		
-		System.out.println("Enter the Allocation data");
-		for(int i=0;i<n;i++)
-			for(int j=0;j<m;j++)
+		Allocation=new int[nProcess][nResource];
+		Max=new int[nProcess][nResource];
+		Available = new int[nResource];
+		Need=new int[nProcess][nResource];
+		Request = new int[nResource];
+
+		System.out.println("Enter Allocation matrix");
+		for(int i=0;i<nProcess;i++)
+			for(int j=0;j<nResource;j++)
 				Allocation[i][j]=sc.nextInt();
-		
-		System.out.println("Enter the Max data");
-		for(int i=0;i<n;i++)
-			for(int j=0;j<m;j++){
+
+		System.out.println("Enter Max data");
+		for(int i=0;i<nProcess;i++)
+			for(int j=0;j<nResource;j++){
 				Max[i][j]=sc.nextInt();
 				Need[i][j]=Max[i][j]-Allocation[i][j];
 			}
 
 		System.out.println("Need is");
-		for(int i=0;i<n;i++)
+		for(int i=0;i<nProcess;i++)
 		{
-			for(int j=0;j<m;j++)
+			for(int j=0;j<nResource;j++)
 				System.out.print(Need[i][j]+" ");
 			System.out.println();
 		}
 
-		System.out.println("Enter the available values");
-		for(int i=0;i<m;i++)
+		System.out.println("Enter available");
+		for(int i=0;i<nResource;i++)
 			Available[i]=sc.nextInt();
 		System.out.println("Is there any resource request? (Reply 1 for yes or 0 for no)");
 		int response = sc.nextInt();
-		
+
 		if(response == 1){
 			System.out.println("Enter the process requesting the resource");
 			int process_request=sc.nextInt();
-			
+
 			System.out.println("Enter the resource");
-			for(int i=0;i<m;i++)
+			for(int i=0;i<nResource;i++)
 				Request[i]=sc.nextInt();
 
 			if((Request[0]<=Need[process_request][0]) && (Request[1]<=Need[process_request][1]) && (Request[2]<=Need[process_request][2]))
 			{
 				if((Request[0]<=Available[1]) && (Request[1]<=Available[1]) && (Request[1]<=Available[2]))
 				{
-					
-					for(int i=0;i<m;i++){
+
+					for(int i=0;i<nResource;i++){
 						Available[i] -= Request[i];
 						Allocation[process_request][i] +=Request[i];
 						Need[process_request][i]-=Request[i];
@@ -269,34 +269,28 @@ public class Bankers {
 				}
 			}
 		}
-		
-		int flag[]=new int[n];
-		for(int k=0;k<m;k++)
+
+		int flag[]=new int[nProcess];
+		for(int k=0;k<nResource;k++)
 		{
-			for(int i=0;i<n;i++)
+			for(int i=0;i<nProcess;i++)
 			{
 				if((flag[i]!=1 && Need[i][0]<=Available[0]) && (Need[i][1]<=Available[1]) && (Need[i][2]<=Available[2]))
 				{
 					flag[i]=1;
 					System.out.println("Process P["+i+"] execution is successful");
-					Available[0] +=Allocation[i][0];
-					Available[1] +=Allocation[i][1];
-					Available[2] +=Allocation[i][2];
 
+					for(int j=0;j<nResource;j++)
+						Available[j] +=  Allocation[i][j];
 				}
-				else 
+				else
 					continue;
 			}
 		}
-
-		System.out.println("The New Available Resource is:-");
-		System.out.println("AvailableA:"+Available[0]);
-		System.out.println("AvailableB:"+Available[1]);
-		System.out.println("AvailableC:"+Available[2]);
+		
+		System.out.println("The New Available Resource is:-"+Available[0]+" "+Available[1]+" "+Available[2]);
 	}
-
 }
-
 
 --------------------------------------------------------------
 9. Design, develop and implement a C/C++/Java program to implement page
@@ -313,8 +307,6 @@ public class Main {
     
     public static void main(String []args) {
     	
-        System.out.println("Select Page Replacement Algorithm\n");
-        
         System.out.println("Enter the Frame Size\n");
         frameSize = sc.nextInt();
        
@@ -327,7 +319,8 @@ public class Main {
         System.out.println("Enter the requests \n");
         for(int i=0;i<noOfPageRequests;i++)
             pageRequests[i] = sc.nextInt();
-        
+	    
+        System.out.println("Select Page Replacement Algorithm\n");
         System.out.println("1)FIFO 2)LRU\n");
         switch(sc.nextInt()) {
         case 1:runFIFO();
@@ -351,7 +344,7 @@ public class Main {
                     hit++;
                 else {
                     frame[marker] = pageRequests[i];
-                    marker = (marker+1)%3;
+                    marker = (marker+1)%frameSize;
                 }
             }
         }
@@ -364,13 +357,9 @@ public class Main {
             	pushToStack(pageRequests[i]);
             else {
                 boolean check_hit = checkForHit(frame,pageRequests[i]);
-                if(check_hit) {
+                if(check_hit)
                     hit++;
-                    pushToStack(pageRequests[i]);
-                }
-                else {
-                    pushToStack(pageRequests[i]);
-                }
+                pushToStack(pageRequests[i]);
             }
         }
     }
