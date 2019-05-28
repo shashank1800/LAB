@@ -10,8 +10,8 @@ char action[20];
 void printfn()
 {
 	int j;
-    for(j=0;j<=top;j++)
-    	printf("%c",stack[j]);
+	for(j=0;j<=top;j++)
+    		printf("%c",stack[j]);
 	printf("\t\t%s",input);
 	printf("\t\t%s\n",action);
 }
