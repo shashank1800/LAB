@@ -239,13 +239,9 @@ void main()
     char c;
     int i, j, k, n;
     for(i = 0; i<3; i++)
-    {
-        for(j = 0; j<4; j++)
-        {
-            strcpy(table[i][j], "e");
-        }
-    }
-    
+ 		for(j = 0; j<4; j++)
+			strcpy(table[i][j], "e");
+	
     printf("Grammar:\n");
     for(i=0; i<3; i++)
         printf("%s\n\n", prod[i]);
@@ -288,8 +284,10 @@ void main()
     
     push('$');
     push('A');
-    
+	
+    //Imp
     i=0;
+	
     printf("\n\n");
     printf("Stack\t\tInput\t\tAction\n");
     while(input[i] != '$' && stack[top] != '$')
@@ -525,7 +523,7 @@ $E+T*F			        $			F->id
 $E+T			        $			T->T*F
 $E			            $			E->E+T
 $E			            $			Accept
-------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 5. Design, develop and implement a C/Java program to generate the machine code using triples for the statement A = -B * (C +D) whose intermediate code in three-address form: 
     T1 = -B 
@@ -564,6 +562,8 @@ class MachineCode {
                 printWriter.println(String.format("STORE %s, R1\n", fields[0]));
             }
         }
+		//Imp
         printWriter.close();
+		scanner.close();
     }
 }
