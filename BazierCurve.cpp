@@ -1,142 +1,80 @@
-#include<stdio.h>
-#include<math.h>
-#include<GL\glut.h>
+#include <math.h>
+#include <GL/glut.h>
+#define pi 3.142
 
-#define PI 3.1416
+int bicoeff[] = {1, 3, 3, 1};
 
-GLint nControlPoints = 4, nBezierCurvePoints = 20;
-GLint *C;
+int nCtrlPts = 4, nBezCurvePts = 250;
+float theta, bezBlendFcn;
 
-struct Point3d
+void bezier(int ctrlPts[][2])
 {
-	GLfloat x, y, z;
-};
+    glBegin(GL_POINTS);
+    
+    for (int k = 0; k <= nBezCurvePts; k++)
+    {
+        float t = (float)k/nBezCurvePts;
+        float bezPt[2] ={0,0};
 
-void bino(GLint C[])
-{
-	GLint j, n=nControlPoints-1;
-	for (GLint k = 0; k <=n; k++)
-	{
-		C[k] = 1;
-		for (j = n; j > k ; j--)
-			C[k] *= j;
-		for (j = n-k; j > 1; j--)
-			C[k] /= j;
-	}
-}
-
-void computeBezierPoint(GLfloat u, Point3d *bezierPoint, Point3d controlPoints[], GLint C[])
-{
-	GLint n = nControlPoints - 1;
-	GLfloat bezBlendFcn;
-	bezierPoint->x = bezierPoint->y = bezierPoint->z = 0.0;
-	for (GLint k = 0; k <= n; k++)
-	{
-		bezBlendFcn = C[k] * pow(u, k) * pow(1 - u, n - k);
-		bezierPoint->x += controlPoints[k].x * bezBlendFcn;
-		bezierPoint->y += controlPoints[k].y * bezBlendFcn;
-		bezierPoint->z += controlPoints[k].z * bezBlendFcn;
-	}
-}
-
-void bezier(Point3d controlPoints[])
-{
-	Point3d bezierCurvePoint;
-	GLfloat u;
-	C = new GLint[nControlPoints];
-
-	bino(C);
-
-	glBegin(GL_LINE_STRIP);
-	for (GLint k = 0; k <= nBezierCurvePoints; k++)
-	{
-		u = GLfloat(k) / GLfloat(nBezierCurvePoints);
-		computeBezierPoint(u, &bezierCurvePoint, controlPoints, C);
-		glVertex2f(bezierCurvePoint.x, bezierCurvePoint.y);
-	}
-	glEnd();
-	delete[] C;
+        for (int k = 0; k < nCtrlPts; k++) //find bezier point
+        {   
+            bezBlendFcn = bicoeff[k] * pow(t, k) * pow(1 - t, (nCtrlPts -1) - k);
+            for(int  j =0; j <= 1; j++)
+                bezPt[j] += ctrlPts[k][j] * bezBlendFcn;
+        }
+        for (int i = 0; i < 40; i++) // plot the same point one below the other
+            glVertex2f(bezPt[0],bezPt[1]-(0.5*i));
+    }
+    glEnd();
 }
 
 void display()
-{
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+{   
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-	glPointSize(5);
-	glLineWidth(5);
+    int ctrlPts[][2] = {{20,100}, {30,120},{50,80},{60,100}};  
 
-	static float theta = 0;
-	Point3d ctrlPts[4] = {{ 20, 100, 0 },{ 30, 110, 0 },{ 50, 90, 0 },{ 60, 100, 0 } };
+    for(int  i =1; i < nCtrlPts; i++) //move control points for animation
+        for(int  j =0; j <= 1; j++)
+            ctrlPts[i][j] += 5*sin(theta);
 
-	ctrlPts[1].x += 10 * sin(theta * PI / 180.0);
-	ctrlPts[1].y += 10 * sin(theta * PI / 180.0);
-	ctrlPts[2].x -= 10 * sin((theta + 30) * PI / 180.0);
-	ctrlPts[2].y -= 10 * sin((theta + 30) * PI / 180.0);
-	ctrlPts[3].x -= 10 * sin((theta)* PI / 180.0);
-	ctrlPts[3].y += sin((theta - 30) * PI / 180.0);
-	theta += 1;
+    theta += 0.0002;
+    glPointSize(2);
 
-	if (theta == 360)
-		theta = 0;
-
-	glPushMatrix();
-	for (int i = 0; i < 24; i++)
-	{
-		glTranslatef(0,-1, 0);
-		bezier(ctrlPts);
-	}
-	glPopMatrix();
-
-	glBegin(GL_LINES);
-	glVertex2f(20, 100);
-	glVertex2f(20, 40);
-	glEnd();
-
-	glFlush();
-	glutPostRedisplay();
-	glutSwapBuffers();
-}
-
-void reshape(GLint w, GLint h)
-{
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, 110, 0, 110);
-	glClear(GL_COLOR_BUFFER_BIT);
+    bezier(ctrlPts); //start 
+        
+    glLineWidth(5);
+    glBegin(GL_LINES);
+        glVertex2f(20, 100);
+        glVertex2f(20, 40);
+    glEnd();
+    glFlush();
+    glutPostRedisplay();
 }
 
 void menu(int op)
 {
-	if (op == 1)
-		glColor3f(1.0, 0.0, 0.0);
-	else if (op == 2)
-		glColor3f(0.0, 1.0, 0.0);
-	else if (op == 3)
-		glColor3f(0.0, 0.0, 1.0);
-	else if (op == 4)
-		exit(0);
-	glutPostRedisplay();
+    if (op == 1) glColor3f(1, 0, 0);
+    else if (op == 2) glColor3f(0, 1, 0);
+    else if (op == 3) glColor3f(0, 0, 1);
+    else exit(0);
+    glutPostRedisplay();
 }
 
+int main(int argc, char *argv[]){
 
-int main(int argc, char *argv[])
-{
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowPosition(50, 50);
-	glutInitWindowSize(500, 500);
-	glutCreateWindow("Bezier Curve");
-
-	glutCreateMenu(menu);
-	glutAddMenuEntry("Red", 1);
-	glutAddMenuEntry("Green", 2);
-	glutAddMenuEntry("Blue", 3);
-	glutAddMenuEntry("Quit", 4);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);
-
-	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
-	glutMainLoop();
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+    glutInitWindowSize(600, 600);
+    glutCreateWindow("BEZIER CURVE");
+    glOrtho(0, 130, 0, 130,-1,1);
+    glutDisplayFunc(display);
+    glutCreateMenu(menu);
+    glutAddMenuEntry("Red", 1);
+    glutAddMenuEntry("Green", 2);
+    glutAddMenuEntry("Blue", 3);
+    glutAddMenuEntry("Exit", 4);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    glutMainLoop();
 }
